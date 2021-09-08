@@ -7,8 +7,6 @@
 #define MSGBUFSIZE 128
 #include "Server.h"
 
-#define PORT 6090
-
 
 Server::~Server() {
     close(sockfd);
@@ -37,7 +35,7 @@ Server::Server(int port, std::string multicast_group) {
     // set up destination address
     //
     stSockAddr.sin_family = AF_INET;
-    stSockAddr.sin_port = htons(PORT);
+    stSockAddr.sin_port = htons(port);
     stSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     // bind to receive address
@@ -54,7 +52,7 @@ Server::Server(int port, std::string multicast_group) {
     mreq.imr_multiaddr.s_addr = inet_addr(multicast_group.c_str());
     mreq.imr_interface.s_addr = htonl(INADDR_ANY);
     if (setsockopt(sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) == -1){
-        std::cerr <<"Error while setsockopt";
+        std::cerr << "Error while setsockopt";
         exit(EXIT_FAILURE);
     }
 
