@@ -2,6 +2,7 @@
 #ifndef LAB1_SERVER_H
 #define LAB1_SERVER_H
 #include <string>
+#include <netinet/in.h>
 
 class Server {
 private:
