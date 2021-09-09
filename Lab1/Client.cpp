@@ -16,7 +16,7 @@ Client::Client(int port, std::string multicast_group) {
         perror("socket");
         exit(1);
     }
-    
+
 }
 
 void Client::run() {
