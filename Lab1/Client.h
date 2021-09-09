@@ -19,7 +19,6 @@ private:
     const char *message = "Hello, World!";
 public:
     Client(int port, std::string multicast_group);
-    void setUUID(int id);
     void run();
     ~Client();
 };

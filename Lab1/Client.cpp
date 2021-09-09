@@ -5,41 +5,42 @@
 #include <cstring>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <iostream>
 #include "Client.h"
 
 Client::Client(int port, std::string multicast_group) {
     // create what looks like an ordinary UDP socket
     //
-    int fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    if (fd < 0) {
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sockfd < 0) {
         perror("socket");
         exit(1);
     }
 
-    // set up destination address
-    //
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = inet_addr(multicast_group.c_str());
-    addr.sin_port = htons(port);
+
+
+
+
 }
 
 void Client::run() {
-    while (1) {
-        char ch = 0;
-        int nbytes = sendto(
-                sockfd,
-                message,
-                strlen(message),
-                0,
-                (struct sockaddr*) &stSockAddr,
-                sizeof(stSockAddr)
-        );
-        if (nbytes < 0) {
-            perror("sendto");
-            exit(1);
-        }
-        sleep(delay_secs); // Unix sleep is seconds
-    }
+    // set up destination address
+    //
+    sockaddr_in groupSock = {};   // init to all zeroes
+    groupSock.sin_family = AF_INET;
+    groupSock.sin_addr.s_addr = inet_addr("226.1.1.1");
+    groupSock.sin_port = htons(4321);
+
+    in_addr localIface = {};   // init to all zeroes
+    localIface.s_addr = inet_addr("127.0.0.1");
+    setsockopt(sockfd, IPPROTO_IP, IP_MULTICAST_IF, (char*)&localIface,
+               sizeof(localIface));
+    
+    const std::string databuf = "Multicast from C++";
+    sendto(sockfd, databuf.c_str(), databuf.length(), 0,
+           (sockaddr*)&groupSock, sizeof(groupSock));
+}
+
+Client::~Client() {
+    close(sockfd);
 }
