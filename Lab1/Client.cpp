@@ -16,11 +16,7 @@ Client::Client(int port, std::string multicast_group) {
         perror("socket");
         exit(1);
     }
-
-
-
-
-
+    
 }
 
 void Client::run() {
@@ -35,7 +31,7 @@ void Client::run() {
     localIface.s_addr = inet_addr("127.0.0.1");
     setsockopt(sockfd, IPPROTO_IP, IP_MULTICAST_IF, (char*)&localIface,
                sizeof(localIface));
-    
+
     const std::string databuf = "Multicast from C++";
     sendto(sockfd, databuf.c_str(), databuf.length(), 0,
            (sockaddr*)&groupSock, sizeof(groupSock));
