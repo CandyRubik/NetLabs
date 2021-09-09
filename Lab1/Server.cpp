@@ -4,6 +4,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <cstring>
+#include <array>
+
 #define MSGBUFSIZE 128
 #include "Server.h"
 
@@ -16,7 +18,7 @@ Server::Server(int port, std::string multicast_group) {
 
     // create what looks like an ordinary UDP socket
     //
-    sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
     if(sockfd == -1) {
         std::cerr << "Error while creating socket";
         exit(EXIT_FAILURE);
@@ -35,8 +37,8 @@ Server::Server(int port, std::string multicast_group) {
     // set up destination address
     //
     stSockAddr.sin_family = AF_INET;
-    stSockAddr.sin_port = htons(port);
-    stSockAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    stSockAddr.sin_port = htons(4321);
+    stSockAddr.sin_addr.s_addr = INADDR_ANY;
 
     // bind to receive address
     //
@@ -48,14 +50,20 @@ Server::Server(int port, std::string multicast_group) {
 
     // use setsockopt() to request that the kernel join a multicast group
     //
-    struct ip_mreq mreq;
-    mreq.imr_multiaddr.s_addr = inet_addr(multicast_group.c_str());
-    mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+    ip_mreq mreq;
+    mreq.imr_multiaddr.s_addr = inet_addr("226.1.1.1");
+    mreq.imr_interface.s_addr = inet_addr("127.0.0.1");
     if (setsockopt(sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char*) &mreq, sizeof(mreq)) == -1){
         std::cerr << "Error while setsockopt";
         exit(EXIT_FAILURE);
     }
 
+    // Read from the socket
+    std::array<char, 1024> arr;
+    arr.fill(0);
+    read(sockfd, arr.data(), arr.size());
+    std::cout << "Message from multicast sender: " << arr.data()
+              << std::endl;
 }
 
 void Server::setUUID(int id) {
@@ -68,14 +76,11 @@ void Server::run() {
     while (1) {
         char msgbuf[MSGBUFSIZE];
         int addrlen = sizeof(stSockAddr);
-        int nbytes = recvfrom(
+        int nbytes = recv(
                 sockfd,
                 msgbuf,
                 MSGBUFSIZE,
-                0,
-                (struct sockaddr *) &stSockAddr,
-                reinterpret_cast<socklen_t *>(&addrlen)
-        );
+                0);
         if (nbytes < 0) {
             perror("recvfrom");
             exit(EXIT_FAILURE);
