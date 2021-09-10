@@ -1,28 +1,37 @@
 //
-// Created by rubik on 09.09.2021.
+// Created by rubik on 10.09.2021.
 //
 
 #ifndef LAB1_CLIENTSERVER_H
 #define LAB1_CLIENTSERVER_H
 
-
-#include <netinet/in.h>
+#define ERROR_VALUE -1
+#define TTL_VALUE 2
 #include <string>
+#include <vector>
+#include <map>
 
 class ClientServer {
-private:
-    int socketFD;
-    sockaddr_in remote;
-    std::string group_addr;
-    int port;
-    std::string uuid;
 public:
-    ClientServer(int port, std::string group_addr, std::string uuid);
-    ClientServer createSocket();
-    ClientServer setUdpSocket();
-    ClientServer bindUdpSocket();
+    ClientServer(int port, std::string groupAddr);
 
-    void run();
+    virtual void createSocket() = 0;
+
+    virtual void setUdpSocket() = 0;
+
+    virtual void bindUdpSocket() = 0;
+
+    [[noreturn]] virtual void run() = 0;
+
+    virtual  ~ClientServer();
+
+protected:
+    std::map<std::string, int> clients; /* value of map works like TTL by default is 5, also { uuid , -1 } it's our values for defining yourself */
+    int socketFD;
+    std::string groupAddr;
+    int port;
+    char uuid[100];
+    std::vector<std::string> message;
 };
 
 
