@@ -16,7 +16,7 @@ public class Client {
     private static int hostPort;
     private static File fileToTransfer;
     private static long filesize;
-    private static byte[] bytes = new byte[10];
+    private static byte[] bytes = new byte[1024];
 
     public static void main(String[] args) {
         if(args.length < 3) {
@@ -41,18 +41,30 @@ public class Client {
              OutputStream out = clientSocket.getOutputStream()
             ) {
                 System.out.println("Client is started");
-                // если соединение произошло и потоки успешно созданы - мы можем
-                //  работать дальше
 
-                out.write((fileToTransfer.getName() + "\n" + filesize + "\n").getBytes()); // отправляем сообщение на сервер
+                // Sending file parameters
+                out.write((fileToTransfer.getName() + " " + filesize + "\n").getBytes(StandardCharsets.UTF_8)); // отправляем сообщение на сервер
                 out.flush();
-                int count;
-                while ((count = in.read(bytes)) > 0) {
-                    System.out.print(new String(bytes, 0, count, StandardCharsets.UTF_8));
+
+                // Print server answer
+                int count = in.read(bytes);
+                String string = new String(bytes, 0, count, StandardCharsets.UTF_8);
+                System.out.println(string);
+
+                // Sending file ...
+                while ((count = fileInputStream.read(bytes)) > 0) {
+                    out.write(bytes, 0, count);
                     Arrays.fill(bytes, (byte) 0);// получив - выводим на экран
                 }
+                out.write(-1);
+                out.flush();
+
+                count = in.read(bytes);
+                string = new String(bytes, 0, count, StandardCharsets.UTF_8);
+                System.out.println(string);
             // ждём, что скажет сервер
         } catch (IOException e) {
+            System.err.println(e.getCause());
             e.printStackTrace();
         }
     }
