@@ -11,9 +11,10 @@ public class Client {
     private static final int HOST_IP_INDEX = 1;
     private static final int HOST_PORT_INDEX = 2;
 
-    private static String filename;
     private static String hostIP;
     private static int hostPort;
+
+    private static String filename;
     private static File fileToTransfer;
     private static long filesize;
     private static byte[] bytes = new byte[1024];
@@ -35,9 +36,7 @@ public class Client {
 
         try (Socket clientSocket = new Socket(hostIP, hostPort);
              FileInputStream fileInputStream = new FileInputStream(fileToTransfer);
-             // читать соообщения с сервера
              InputStream in = clientSocket.getInputStream();
-            // писать туда же
              OutputStream out = clientSocket.getOutputStream()
             ) {
                 System.out.println("Client is started");
@@ -62,7 +61,6 @@ public class Client {
                 count = in.read(bytes);
                 string = new String(bytes, 0, count, StandardCharsets.UTF_8);
                 System.out.println(string);
-            // ждём, что скажет сервер
         } catch (IOException e) {
             System.err.println(e.getCause());
             e.printStackTrace();
