@@ -10,11 +10,11 @@ public class Server {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
             BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))
             ) {
-                System.out.println("Сервер запущен!");
+                System.out.println("Server has started");
                 String word = in.readLine(); // ждём пока клиент что-нибудь нам напишет
                 System.out.println(word);
                 // не долго думая отвечает клиенту
-                out.write("Привет, это Сервер! Подтверждаю, вы написали : " + word + "\n");
+                out.write("Hello, it's Server! confirm,that you have written : " + word + "\n");
                 out.flush(); // выталкиваем все из буфера
 
         } catch (IOException e) {
