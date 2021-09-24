@@ -62,10 +62,10 @@ public class ClientHandler extends Thread {
                 }
 
                 if (file.length() == filesize) {
-                    out.write(("File " + file.getName() + "uploaded successfully").getBytes(StandardCharsets.UTF_8));
+                    out.write(("File " + file.getName() + " uploaded successfully").getBytes(StandardCharsets.UTF_8));
                     out.flush();
                 } else {
-                    out.write(("File " + file.getName() + "uploaded unsuccessfully [" + file.length() + "/" + filesize + "]").getBytes(StandardCharsets.UTF_8));
+                    out.write(("File " + file.getName() + " uploaded unsuccessfully [" + file.length() + "/" + filesize + "]").getBytes(StandardCharsets.UTF_8));
                     out.flush();
                 }
                 isWorkEnd = true;
